@@ -1,44 +1,61 @@
 using System;
 using UnityEngine;
 
-namespace ShootEmUp
+namespace Bullets
 {
     public sealed class Bullet : MonoBehaviour
     {
-        public event Action<Bullet, Collision2D> OnCollisionEntered;
+        [SerializeField] private Rigidbody2D _rigidbody2D;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
 
-        [NonSerialized] public bool isPlayer;
-        [NonSerialized] public int damage;
+        public int Damage { get; private set; }
+        public bool IsPlayer { get; private set; }
 
-        [SerializeField]
-        private new Rigidbody2D rigidbody2D;
-
-        [SerializeField]
-        private SpriteRenderer spriteRenderer;
+        public event Action<Bullet, GameObject> CollisionEntered;
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            this.OnCollisionEntered?.Invoke(this, collision);
+            CollisionEntered?.Invoke(this, collision.gameObject);
         }
 
-        public void SetVelocity(Vector2 velocity)
+        public void Init(Vector3 position, Vector2 velocity, int physicsLayer, Color color, int damage, bool isPlayer)
         {
-            this.rigidbody2D.velocity = velocity;
+            SetPosition(position);
+            SetVelocity(velocity);
+            SetPhysicsLayer(physicsLayer);
+            SetColor(color);
+            SetDamage(damage);
+            SetIsPlayer(isPlayer);
         }
 
-        public void SetPhysicsLayer(int physicsLayer)
+        private void SetVelocity(Vector2 velocity)
         {
-            this.gameObject.layer = physicsLayer;
+            _rigidbody2D.velocity = velocity;
         }
 
-        public void SetPosition(Vector3 position)
+        private void SetPhysicsLayer(int physicsLayer)
         {
-            this.transform.position = position;
+            gameObject.layer = physicsLayer;
         }
 
-        public void SetColor(Color color)
+        private void SetPosition(Vector3 position)
         {
-            this.spriteRenderer.color = color;
+            transform.position = position;
+        }
+
+        private void SetColor(Color color)
+        {
+            _spriteRenderer.color = color;
+        }
+
+        private void SetDamage(int damage)
+        {
+            Damage = damage;
+        }
+
+        private void SetIsPlayer(bool isPlayer)
+        {
+            IsPlayer = isPlayer;
         }
     }
 }

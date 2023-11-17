@@ -1,42 +1,41 @@
+using Components;
 using UnityEngine;
 
-namespace ShootEmUp
+namespace Enemy.Agents
 {
     public sealed class EnemyMoveAgent : MonoBehaviour
     {
-        public bool IsReached
-        {
-            get { return this.isReached; }
-        }
+        [SerializeField] private MoveComponent _moveComponent;
 
-        [SerializeField] private MoveComponent moveComponent;
-
-        private Vector2 destination;
-
-        private bool isReached;
+        private Vector2 _destination;
+        private bool _isReached;
+        private float _epsilon = 0.25f;
+        
+        public bool IsReached => _isReached;
 
         public void SetDestination(Vector2 endPoint)
         {
-            this.destination = endPoint;
-            this.isReached = false;
+            _destination = endPoint;
+            _isReached = false;
         }
 
         private void FixedUpdate()
         {
-            if (this.isReached)
+            if (_isReached)
             {
-                return;
-            }
-            
-            var vector = this.destination - (Vector2) this.transform.position;
-            if (vector.magnitude <= 0.25f)
-            {
-                this.isReached = true;
                 return;
             }
 
-            var direction = vector.normalized * Time.fixedDeltaTime;
-            this.moveComponent.MoveByRigidbodyVelocity(direction);
+            Vector2 vector = _destination - (Vector2)transform.position;
+
+            if (vector.magnitude <= _epsilon)
+            {
+                _isReached = true;
+                return;
+            }
+
+            Vector2 direction = vector.normalized * Time.fixedDeltaTime;
+            _moveComponent.Move(direction);
         }
     }
 }

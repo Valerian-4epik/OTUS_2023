@@ -1,24 +1,26 @@
 using System;
 using UnityEngine;
 
-namespace ShootEmUp
+namespace Components
 {
     public sealed class HitPointsComponent : MonoBehaviour
     {
-        public event Action<GameObject> hpEmpty;
-        
-        [SerializeField] private int hitPoints;
-        
-        public bool IsHitPointsExists() {
-            return this.hitPoints > 0;
+        [SerializeField] private int _hitPoints;
+
+        public event Action<GameObject> OnHealthPointsDepleted;
+
+        public bool IsHitPointsExists()
+        {
+            return _hitPoints > 0;
         }
 
         public void TakeDamage(int damage)
         {
-            this.hitPoints -= damage;
-            if (this.hitPoints <= 0)
+            _hitPoints -= damage;
+
+            if (_hitPoints <= 0)
             {
-                this.hpEmpty?.Invoke(this.gameObject);
+                OnHealthPointsDepleted?.Invoke(this.gameObject);
             }
         }
     }
