@@ -1,12 +1,14 @@
 using Bullets;
 using Components;
 using Enemy.Agents;
+using GameManager;
 using UnityEngine;
 
 namespace Enemy
 {
     public sealed class EnemyManager : MonoBehaviour
     {
+        [SerializeField] private CoreManager _coreManager;
         [SerializeField] private EnemySpawner _enemySpawner;
         [SerializeField] private BulletSystem _bulletSystem;
         [SerializeField] private BulletConfig _bulletConfig;
@@ -14,7 +16,10 @@ namespace Enemy
         public void SpawnEnemy()
         {
             GameObject enemy = _enemySpawner.GetEnemy();
-
+            var enemyMoveAgent = enemy.GetComponent<EnemyMoveAgent>();
+            var enemyAttackAgent = enemy.GetComponent<EnemyAttackAgent>();
+            _coreManager.AddListener(enemyMoveAgent);
+            _coreManager.AddListener(enemyAttackAgent);
             enemy.GetComponent<HitPointsComponent>().OnHealthPointsDepleted += OnDestroyed;
             enemy.GetComponent<EnemyAttackAgent>().OnFire += OnFire;
         }
@@ -23,7 +28,10 @@ namespace Enemy
         {
             enemy.GetComponent<HitPointsComponent>().OnHealthPointsDepleted -= OnDestroyed;
             enemy.GetComponent<EnemyAttackAgent>().OnFire -= OnFire;
-            
+            var enemyMoveAgent = enemy.GetComponent<EnemyMoveAgent>();
+            var enemyAttackAgent = enemy.GetComponent<EnemyAttackAgent>();
+            _coreManager.RemoveListener(enemyMoveAgent);
+            _coreManager.RemoveListener(enemyAttackAgent);
             _enemySpawner.Release(enemy);
         }
 

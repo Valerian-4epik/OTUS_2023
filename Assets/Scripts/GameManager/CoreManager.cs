@@ -47,6 +47,26 @@ namespace GameManager
             }
         }
 
+        public void RemoveListener(Listeners.IGameListener listener)
+        {
+            _listeners.Remove(listener);
+            
+            if (listener is Listeners.IGameUpdateListener updateListener)
+            {
+                _updateListeners.Remove(updateListener);
+            }
+            
+            if (listener is Listeners.IGameFixedUpdateListener fixedUpdateListener)
+            {
+                _fixedUpdateListeners.Remove(fixedUpdateListener);
+            }
+            
+            if (listener is Listeners.IGameLateUpdateListener lateUpdateListener)
+            {
+                _lateUpdateListeners.Remove(lateUpdateListener);
+            }
+        }
+
         [Button]
         public void OnStart()
         {

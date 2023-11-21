@@ -754,6 +754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32dae85f8264479bac19d85418d92392, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _coreManager: {fileID: 3951702117947426126}
   _enemySpawner: {fileID: 562298207}
   _bulletSystem: {fileID: 363245577}
   _bulletConfig: {fileID: 11400000, guid: 1b74849094e3293488336348abc843d4, type: 2}
@@ -770,7 +771,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 4414282821800802397}
-  _coreManager: {fileID: 3951702117947426126}
   _enemyPositions: {fileID: 7166351703523243261}
   _enemyPool: {fileID: 562298209}
 --- !u!114 &562298209

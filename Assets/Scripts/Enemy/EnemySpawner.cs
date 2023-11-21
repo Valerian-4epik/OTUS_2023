@@ -9,7 +9,6 @@ namespace Enemy
     {
         [Header("Spawn")] 
         [SerializeField] private GameObject _player;
-        [SerializeField] private CoreManager _coreManager;
         [SerializeField] private EnemyPositions _enemyPositions;
         [SerializeField] private MonoPool _enemyPool;
 
@@ -33,11 +32,8 @@ namespace Enemy
             Transform spawnPosition = _enemyPositions.RandomSpawnPosition();
             enemy.transform.position = spawnPosition.position;
             Transform attackPosition = _enemyPositions.RandomAttackPosition();
-            
             var enemyMoveAgent = enemy.GetComponent<EnemyMoveAgent>();
             var enemyAttackAgent = enemy.GetComponent<EnemyAttackAgent>();
-            _coreManager.AddListener(enemyMoveAgent);
-            _coreManager.AddListener(enemyAttackAgent);
             enemyMoveAgent.SetDestination(attackPosition.position);
             enemyAttackAgent.SetTarget(_player);
         }

@@ -40,14 +40,7 @@ namespace Bullets
             bullet.Init(args.Position, args.Velocity, args.PhysicsLayer, args.Color, args.Damage, args.IsPlayer);
             bullet.CollisionEntered += BulletCollision;
         }
-
-        public Bullet GetBullet()
-        {
-            var bulletObject = _bulletPool.Get();
-            Bullet bullet = bulletObject.GetComponent<Bullet>();
-            return bullet;
-        }
-
+        
         private void Release(Bullet bullet)
         {
             bullet.CollisionEntered -= BulletCollision;
