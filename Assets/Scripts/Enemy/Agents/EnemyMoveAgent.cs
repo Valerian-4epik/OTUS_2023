@@ -1,36 +1,38 @@
 using Components;
+using GameManager;
 using UnityEngine;
 
 namespace Enemy.Agents
 {
-    public sealed class EnemyMoveAgent : MonoBehaviour
+    public sealed class EnemyMoveAgent : MonoBehaviour,
+        Listeners.IGameFixedUpdateListener
     {
+        private const float EPSILON = 0.25f;
+
         [SerializeField] private MoveComponent _moveComponent;
 
         private Vector2 _destination;
-        private bool _isReached;
-        private float _epsilon = 0.25f;
-        
-        public bool IsReached => _isReached;
+
+        public bool IsReached { get; private set; }
 
         public void SetDestination(Vector2 endPoint)
         {
             _destination = endPoint;
-            _isReached = false;
+            IsReached = false;
         }
-
-        private void FixedUpdate()
+        
+        public void OnFixedUpdate(float fixedTimeDelta)
         {
-            if (_isReached)
+            if (IsReached)
             {
                 return;
             }
 
             Vector2 vector = _destination - (Vector2)transform.position;
 
-            if (vector.magnitude <= _epsilon)
+            if (vector.magnitude <= EPSILON)
             {
-                _isReached = true;
+                IsReached = true;
                 return;
             }
 

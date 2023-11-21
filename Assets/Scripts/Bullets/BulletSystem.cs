@@ -1,32 +1,30 @@
 using System.Collections.Generic;
 using Components;
+using GameManager;
 using Level;
 using Pools;
 using UnityEngine;
 
 namespace Bullets
 {
-    public sealed class BulletSystem : ObjectPool<Bullet>
+    public sealed class BulletSystem : MonoBehaviour,
+        Listeners.IGameFixedUpdateListener
     {
         [SerializeField] private LevelBounds _levelBounds;
+        [SerializeField] private MonoPool _bulletPool;
 
+        private readonly HashSet<Bullet> _activeBullets = new();
         private readonly List<Bullet> _bulletCache = new();
-        private MonoPool<Bullet> _bulletPool;
-
-        private void Awake()
-        {
-            _bulletPool = new MonoPool<Bullet>(Prefab, Count, Container);
-        }
-
-        private void FixedUpdate()
+        
+        public void OnFixedUpdate(float fixedTimeDelta)
         {
             _bulletCache.Clear();
-            _bulletCache.AddRange(ActiveObjects);
-
+            _bulletCache.AddRange(_activeBullets);
+            
             for (int i = 0, count = _bulletCache.Count; i < count; i++)
             {
                 Bullet bullet = _bulletCache[i];
-
+            
                 if (!_levelBounds.InBounds(bullet.transform.position))
                 {
                     Release(bullet);
@@ -34,23 +32,26 @@ namespace Bullets
             }
         }
 
-        public override void Release(Bullet bullet)
+        public void Shoot(Args args)
         {
-            bullet.CollisionEntered -= BulletCollision;
-            bullet.transform.SetParent(Container);
-        }
-
-        public void FlyBulletByArgs(Args args)
-        {
-            Bullet bullet = _bulletPool.Get();
-            bullet.transform.SetParent(WorldTransform);
+            GameObject bulletObject = _bulletPool.Get();
+            Bullet bullet = bulletObject.GetComponent<Bullet>();
+            bullet.transform.SetParent(_bulletPool.WorldTransform);
             bullet.Init(args.Position, args.Velocity, args.PhysicsLayer, args.Color, args.Damage, args.IsPlayer);
             bullet.CollisionEntered += BulletCollision;
         }
 
-        public override Bullet Get()
+        public Bullet GetBullet()
         {
-            return _bulletPool.Get();
+            var bulletObject = _bulletPool.Get();
+            Bullet bullet = bulletObject.GetComponent<Bullet>();
+            return bullet;
+        }
+
+        private void Release(Bullet bullet)
+        {
+            bullet.CollisionEntered -= BulletCollision;
+            bullet.transform.SetParent(_bulletPool.Container);
         }
 
         private void BulletCollision(Bullet bullet, GameObject collisionObject)

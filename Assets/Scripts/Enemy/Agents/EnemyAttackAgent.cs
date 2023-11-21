@@ -1,9 +1,11 @@
 using Components;
+using GameManager;
 using UnityEngine;
 
 namespace Enemy.Agents
 {
-    public sealed class EnemyAttackAgent : MonoBehaviour
+    public sealed class EnemyAttackAgent : MonoBehaviour,
+        Listeners.IGameFixedUpdateListener
     {
         [SerializeField] private WeaponComponent _weaponComponent;
         [SerializeField] private EnemyMoveAgent _moveAgent;
@@ -21,12 +23,7 @@ namespace Enemy.Agents
             _target = target;
         }
 
-        public void Reset()
-        {
-            _currentTime = _countdown;
-        }
-
-        private void FixedUpdate()
+        public void OnFixedUpdate(float fixedTimeDelta)
         {
             if (!_moveAgent.IsReached)
             {
@@ -45,6 +42,11 @@ namespace Enemy.Agents
                 Fire();
                 _currentTime += _countdown;
             }
+        }
+
+        public void Reset()
+        {
+            _currentTime = _countdown;
         }
 
         private void Fire()

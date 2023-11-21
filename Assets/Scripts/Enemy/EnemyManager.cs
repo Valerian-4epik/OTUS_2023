@@ -1,4 +1,3 @@
-using System.Collections;
 using Bullets;
 using Components;
 using Enemy.Agents;
@@ -8,23 +7,16 @@ namespace Enemy
 {
     public sealed class EnemyManager : MonoBehaviour
     {
-        [SerializeField] private EnemyPool _enemyPool;
+        [SerializeField] private EnemySpawner _enemySpawner;
         [SerializeField] private BulletSystem _bulletSystem;
         [SerializeField] private BulletConfig _bulletConfig;
-
-        private IEnumerator Start()
+        
+        public void SpawnEnemy()
         {
-            float delay = 1;
+            GameObject enemy = _enemySpawner.GetEnemy();
 
-            while (enabled)
-            {
-                yield return new WaitForSeconds(delay);
-
-                Enemy enemy = _enemyPool.Get();
-
-                enemy.GetComponent<HitPointsComponent>().OnHealthPointsDepleted += OnDestroyed;
-                enemy.GetComponent<EnemyAttackAgent>().OnFire += OnFire;
-            }
+            enemy.GetComponent<HitPointsComponent>().OnHealthPointsDepleted += OnDestroyed;
+            enemy.GetComponent<EnemyAttackAgent>().OnFire += OnFire;
         }
 
         private void OnDestroyed(GameObject enemy)
@@ -32,14 +24,14 @@ namespace Enemy
             enemy.GetComponent<HitPointsComponent>().OnHealthPointsDepleted -= OnDestroyed;
             enemy.GetComponent<EnemyAttackAgent>().OnFire -= OnFire;
             
-            _enemyPool.Release(enemy.GetComponent<Enemy>());
+            _enemySpawner.Release(enemy);
         }
 
         private void OnFire(GameObject enemy, Vector2 position, Vector2 direction)
         {
             float speed = 2.0f;
             
-            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
+            _bulletSystem.Shoot(new BulletSystem.Args
             {
                 IsPlayer = false,
                 PhysicsLayer = (int)_bulletConfig.PhysicsLayer,

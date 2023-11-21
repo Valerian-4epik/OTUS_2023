@@ -3,27 +3,31 @@ using UnityEngine;
 
 namespace Pools
 {
-    public sealed class MonoPool<T> where T : MonoBehaviour
+    public sealed class MonoPool : MonoBehaviour
     {
-        private readonly T _prefab;
-        private readonly Transform _container;
-        private readonly Queue<T> _pool;
+        [SerializeField] private GameObject _prefab;
+        [SerializeField] private int _count;
+        [SerializeField] private Transform _container;
+        [SerializeField] private Transform _worldTransform;
+        
+        private Queue<GameObject> _pool;
+        
+        public Transform Container => _container;
+        public Transform WorldTransform => _worldTransform;
 
-        public MonoPool(T prefab, int count, Transform container)
+        public void Awake()
         {
-            _prefab = prefab;
-            _container = container;
-            _pool = new Queue<T>(count);
+            _pool = new Queue<GameObject>(_count);
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < _count; i++)
             {
                 _pool.Enqueue(CreateObject());
             }
         }
 
-        public T Get()
+        public GameObject Get()
         {
-            if (_pool.TryDequeue(out T obj))
+            if (_pool.TryDequeue(out GameObject obj))
             {
                 return obj;
             }
@@ -31,14 +35,14 @@ namespace Pools
             return CreateObject();
         }
 
-        public void Release(T obj)
+        public void Release(GameObject obj)
         {
             _pool.Enqueue(obj);
         }
 
-        private T CreateObject()
+        private GameObject CreateObject()
         {
-            return Object.Instantiate(_prefab, _container);
+            return Instantiate(_prefab, _container);
         }
     }
 }

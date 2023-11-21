@@ -1,9 +1,11 @@
 using System;
+using GameManager;
 using UnityEngine;
 
 namespace Level
 {
-    public sealed class LevelBackground : MonoBehaviour
+    public sealed class LevelBackground : MonoBehaviour,
+        Listeners.IGameFixedUpdateListener
     {
         [SerializeField] private Params _params;
 
@@ -25,7 +27,7 @@ namespace Level
             _positionZ = position.z;
         }
 
-        private void FixedUpdate()
+        public void OnFixedUpdate(float fixedTimeDelta)
         {
             if (_transform.position.y <= _endPositionY)
             {
